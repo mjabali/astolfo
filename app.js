@@ -75,6 +75,7 @@ function tryPhoneVerification(){
 				console.log("Country Code: " + country_code);
 				console.log("Phone Number: " + phone_number);
 				console.log("Phone SID: " + phone_sid);
+				console.log("Twilio Phone Number has been set to send callback to: " + number.sms_url);
 				if(config.onecode == true){
 					reuse_number = true;	
 				}
