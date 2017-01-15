@@ -5,8 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request');
-//var index = require('./routes/index');
-//var users = require('./routes/users');
 
 var app = express();
 
@@ -18,9 +16,6 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-//app.use('/', index);
-//app.use('/users', users);
 
 //Get Environment Variables
 var config = require('./config.js');
@@ -156,6 +151,14 @@ function tryOneCode(){
 	});	
  }
  
+ //Remove Authy User
+ function removeUser(){
+ 	authy.deleteUser({ authyId: authy_id }, function(err, res) {
+ 		if (err) throw err;
+ 		console.log('User has been scheduled for deletion');
+ 	});
+ }
+
 //Trigger OneCode Request
 function oneCodeRequest(authyID){
 	authy.requestSms({ authyId: authyID }, function(err, res) {
@@ -172,6 +175,7 @@ function oneCodeVerify(token){
 		if (err) throw err;
 		console.log('Token is valid');
 	});
+	removeUser(authy_id);
 	if(config.remove_number == true){
 		removeTwilioNumber();	
 	}
