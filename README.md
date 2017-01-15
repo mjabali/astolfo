@@ -65,9 +65,9 @@ This project is built using the [Express](http://expressjs.com/) web framework.
     
 #### Arguments
 * `phone_verification` _(boolean)_: Set it to true if you want to perform Authy Phone Verification tests.
-* `pv_sms_url` _(string)_: The URL for the Phone Verification SMS Webhook. This is used by the framework to receive the SMS payload for verification.
+* `pv_sms_url` _(string)_: The URL for the Phone Verification SMS Webhook. This is used by the framework to receive the SMS payload for verification. You can use [ngrok](https://ngrok.com/) to create a secure tunnel to your local host. 
 * `onecode` _(boolean)_: Set it to true if you want to perform Authy OneCode tests.
-*`oc_sms_url` _(string)_: The URL for the OneCode SMS Webhook. This is used by the framework to receive the SMS payload for verification.
+*`oc_sms_url` _(string)_: The URL for the OneCode SMS Webhook. This is used by the framework to receive the SMS payload for verification. You can use [ngrok](https://ngrok.com/) to create a secure tunnel to your local host. 
 * `aread_code` _(number)_: The desired area code for the Twilio Number to be created.
 * `remove_number` _(boolean)_: Set it to true if you want to remove the Twilio Number after the tests.
 
