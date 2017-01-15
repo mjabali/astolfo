@@ -51,8 +51,6 @@ This project is built using the [Express](http://expressjs.com/) web framework.
 
 1. Export the required environment variable (TWILIO\_ACCOUNT\_SID, TWILIO\_AUTH\_TOKEN and AUTHY\_API\_KEY).
 
-   You can find your AUTHY API KEY for Production at https://dashboard.authy.com/.
-
    ```bash
    $ export TWILIO_ACCOUNT_SID=Your Twilio Account SID
    $ export TWILIO_AUTH_TOKEN=Your Twilio Auth Token
@@ -71,7 +69,10 @@ This project is built using the [Express](http://expressjs.com/) web framework.
 * `aread_code` _(number)_: The desired area code for the Twilio Number to be created.
 * `remove_number` _(boolean)_: Set it to true if you want to remove the Twilio Number after the tests.
 
-5. Run the server.
+Save the file.
+
+## Run the server
+1. Run the server with the following command.
 
    ```bash
    $ npm start
