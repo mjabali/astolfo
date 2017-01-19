@@ -53,6 +53,14 @@ app.post('/verification', function (req, res) {
   res.send('Success!');
 })
 
+//Start the test framework via API call
+app.post('/start', function (req, res) {
+  console.log("Received request to start testing framework... ");
+  tryPhoneVerification();
+  res.send('Success!');
+})
+
+
 //Get a Twilio Number and set the SMS Webhook - Get the Phone_Number
 function tryPhoneVerification(){
 	if(config.phone_verification == true){
@@ -213,7 +221,8 @@ function phoneVerificationVerify(token){
 	tryOneCode();
 }
 
-tryPhoneVerification();
+//Start Testing Framework Automatically
+//tryPhoneVerification();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
