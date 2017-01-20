@@ -78,7 +78,10 @@ Save the file.
    $ npm start
    ```
 
-That's it! The tests should be performed automatically according to the provided arguments above.
+## Start the Testing Framework
+1. Simply make a HTTP POST call to the http://<hostname>:<port>/start to start the testing framework.
+
+That's it! The tests should be performed automatically for you.
 
 ## Meta
 
