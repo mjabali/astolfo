@@ -79,7 +79,7 @@ Save the file.
    ```
 
 ## Start the Testing Framework
-1. Simply make a HTTP POST call to the http://hostname:port/start to start the testing framework.
+1. Simply make a HTTP POST call to http://hostname:port/start to start the testing framework.
 
 That's it! The tests should be performed automatically for you.
 
