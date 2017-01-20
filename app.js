@@ -66,6 +66,10 @@ app.post('/start', function (req, res) {
   	res.send('Success!');
 })
 
+/* API Setup */
+app.get('/', function (req, res) {
+	res.render('index',{ title : 'Authy OneCode and Phone Verification Automated Testing Framework' })
+});
 
 //Get a Twilio Number and set the SMS Webhook - Get the Phone_Number
 function tryPhoneVerification(){
