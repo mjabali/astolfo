@@ -5,24 +5,28 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request');
+var logger = require('winston');
 
 var app = express();
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+//app.use(logger('dev'));
 //app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Set Logger Information
+logger.add(logger.transports.File, { filename: './authy-tests.log' });
+
 //Get Environment Variables
 var config = require('./config.js');
-console.log("TWILIO_ACCOUNT_SID: " + process.env.TWILIO_ACCOUNT_SID)
-console.log("TWILIO_AUTH_TOKEN: " + process.env.TWILIO_AUTH_TOKEN)
-console.log("AUTHY_API_KEY: " + process.env.AUTHY_API_KEY)
-console.log("-------------------------------------------");
+logger.info("TWILIO_ACCOUNT_SID: " + process.env.TWILIO_ACCOUNT_SID)
+logger.info("TWILIO_AUTH_TOKEN: " + process.env.TWILIO_AUTH_TOKEN)
+logger.info("AUTHY_API_KEY: " + process.env.AUTHY_API_KEY)
+logger.info("-------------------------------------------");
 
 const twilio = require('twilio')(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN);
 const enums = require('authy-client').enums;
@@ -37,7 +41,7 @@ var reuse_number = false;
 
 //Receive OneCode SMS Content to be validated
 app.post('/onecode', function (req, res) {
-  console.log("Received message: " + req.body.Body);
+  logger.info("Received message: " + req.body.Body);
   var token = req.body.Body.match(/\d/g);
   token = token.join("");
   oneCodeVerify(token);
@@ -46,46 +50,46 @@ app.post('/onecode', function (req, res) {
 
 //Receive Phone Verification SMS Content to be validated
 app.post('/verification', function (req, res) {
-  console.log("Received message: " + req.body.Body);
+  logger.info("Received message: " + req.body.Body);
   var token = req.body.Body.match(/\d/g);
   token = token.join("");
   phoneVerificationVerify(token);
   res.send('Success!');
 })
 
-//Start the test framework via API call
+//Start the test framework via API
 app.post('/start', function (req, res) {
-  console.log("Received request to start testing framework... ");
-  tryPhoneVerification();
-  res.send('Success!');
+	logger.info("Received request to start testing framework...");
+  	tryPhoneVerification();
+  	res.send('Success!');
 })
 
 
 //Get a Twilio Number and set the SMS Webhook - Get the Phone_Number
 function tryPhoneVerification(){
 	if(config.phone_verification == true){
-		console.log("Running Phone Verification Testing");
+		logger.info("Running Phone Verification Testing");
 			twilio.incomingPhoneNumbers.create({
 			SmsUrl: config.pv_sms_url,
 			AreaCode: config.area_code,
 			FriendlyName: 'PhoneVerificationTestingNumber'
 		}, function(err, number){
 			if (err == null){
-				console.log("New Number Registered is: " + number.phone_number);
+				logger.info("New Number Registered is: " + number.phone_number);
 				country_code = number.phone_number.substring(0,2);
 				phone_number = number.phone_number.substring(2,12);
 				phone_sid = number.sid;
-				console.log("Country Code: " + country_code);
-				console.log("Phone Number: " + phone_number);
-				console.log("Phone SID: " + phone_sid);
-				console.log("Twilio Phone Number has been set to send callback to: " + number.sms_url);
+				logger.info("Country Code: " + country_code);
+				logger.info("Phone Number: " + phone_number);
+				logger.info("Phone SID: " + phone_sid);
+				logger.info("Twilio Phone Number has been set to send callback to: " + number.sms_url);
 				if(config.onecode == true){
 					reuse_number = true;	
 				}
 				//Call Authy Phone Verification 
 				phoneVerificationRequest(country_code, phone_number);
 			}else{
-				console.log("ERROR: " + err.message);
+				logger.error("ERROR: " + err.message);
 			}	
 		});
 	}else{
@@ -95,38 +99,38 @@ function tryPhoneVerification(){
 
 function tryOneCode(){
 	if(config.onecode == true){
-		console.log("Running Authy OneCode Testing");
+		logger.info("Running Authy OneCode Testing");
 		if(reuse_number == false){
-			console.log("Getting a New Twilio Number");
+			logger.info("Getting a New Twilio Number");
 			twilio.incomingPhoneNumbers.create({
 			SmsUrl: config.oc_sms_url,
 			AreaCode: config.area_code,
 			FriendlyName: 'OneCodeTestingNumber'
 		}, function(err, number){
 				if (err == null){
-					console.log("New Number Registered is: " + number.phone_number);
+					logger.info("New Number Registered is: " + number.phone_number);
 					country_code = number.phone_number.substring(0,2);
 					phone_number = number.phone_number.substring(2,12);
 					phone_sid = number.sid;
-					console.log("Country Code: " + country_code);
-					console.log("Phone Number: " + phone_number);
-					console.log("Phone SID: " + phone_sid);
+					logger.info("Country Code: " + country_code);
+					logger.info("Phone Number: " + phone_number);
+					logger.info("Phone SID: " + phone_sid);
 					//Call Authy User Registration
 					registerUser(country_code, phone_number);
 				}else{
-					console.log("ERROR: " + err.message);
+					logger.error("ERROR: " + err.message);
 				}
 			});
 		}else{
-			console.log("Updating Existing Number to OneCode Webhook");
+			logger.info("Updating Existing Number to OneCode Webhook");
 			twilio.incomingPhoneNumbers(phone_sid).update({
 				SmsUrl: config.oc_sms_url
 			}, function(err, number){
 				if(err) throw err;
-				console.log("Updated existing number to send callback to: " + number.sms_url);
+				logger.info("Updated existing number to send callback to: " + number.sms_url);
 			});
 			//Call Authy User Registration
-			console.log("Reusing Existing Twilio Number");
+			logger.info("Reusing Existing Twilio Number");
 			registerUser(country_code, phone_number);
 		}
 	}
@@ -137,7 +141,7 @@ function tryOneCode(){
  	if(reuse_number == false){
 	 	twilio.incomingPhoneNumbers(phone_sid).delete(function(err){
 	 		if (err) throw err;
-	 		console.log("Twilio Phone Number Released");
+	 		logger.info("Twilio Phone Number Released");
 	 	});
  	}
 }
@@ -153,7 +157,7 @@ function tryOneCode(){
 		if (err) throw err;
 
 		authy_id = registration.user.id;
-		console.log("Authy User Registered: " + authy_id);
+		logger.info("Authy User Registered: " + authy_id);
 		//Call Authy OneCode API
 		oneCodeRequest(authy_id);
 	});	
@@ -163,7 +167,7 @@ function tryOneCode(){
  function removeUser(){
  	authy.deleteUser({ authyId: authy_id }, function(err, res) {
  		if (err) throw err;
- 		console.log('User has been scheduled for deletion');
+ 		logger.info('User has been scheduled for deletion');
  	});
  }
 
@@ -171,17 +175,16 @@ function tryOneCode(){
 function oneCodeRequest(authyID){
 	authy.requestSms({ authyId: authyID }, function(err, res) {
   		if (err) throw err;
-
-  		console.log('Message sent successfully to', phone_number);
+  		logger.info('Message sent successfully to', phone_number);
 	});
 }
 
 //Validate OneCode Request
 function oneCodeVerify(token){
-	console.log("Validating token: " + token + " for Authy ID: " + authy_id);
+	logger.info("Validating token: " + token + " for Authy ID: " + authy_id);
 	authy.verifyToken({ authyId: authy_id, token: token }, function(err, res) {
 		if (err) throw err;
-		console.log('Token is valid');
+		logger.info('Token is valid');
 	});
 	removeUser(authy_id);
 	if(config.remove_number == true){
@@ -191,7 +194,7 @@ function oneCodeVerify(token){
 
 //Trigger Phone Verification
 function phoneVerificationRequest(country_code, phone_number){
-	console.log("Starting Phone Verification for: " + phone_number);
+	logger.info("Starting Phone Verification for: " + phone_number);
 	var options = {
 		url: 'https://api.authy.com/protected/json/phones/verification/start',
 		method: 'POST',
@@ -199,9 +202,9 @@ function phoneVerificationRequest(country_code, phone_number){
 	}
 	request(options, function(error, response, body){
 		if(!error && response.statusCode == 200){
-			console.log("Phone Information: " + body);
+			logger.info("Phone Information: " + body);
 		}else{
-			console.log("ERROR: " + error);
+			logger.error("ERROR: " + error);
 		}
 	})
 }
@@ -213,7 +216,7 @@ function phoneVerificationVerify(token){
 		phone: phone_number, 
 		token: token }, function(err, res) {
 			if (err) throw err;
-			console.log('Verification code is valid');
+			logger.info('Verification code is valid');
 		});
 	if(config.remove_number == true){
 		removeTwilioNumber();	
