@@ -7,5 +7,7 @@ module.exports = {
     onecode: true,
     oc_sms_url: 'http://1d225ad6.ngrok.io/onecode',
     area_code: 619,
-    remove_number: true
+    remove_number: true,
+    log_level: "debug",
+    log_filename: "./authy-tests.log"
 };

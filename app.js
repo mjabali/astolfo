@@ -18,15 +18,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Set Logger Information
-logger.add(logger.transports.File, { filename: './authy-tests.log' });
-
 //Get Environment Variables
 var config = require('./config.js');
-logger.info("TWILIO_ACCOUNT_SID: " + process.env.TWILIO_ACCOUNT_SID)
-logger.info("TWILIO_AUTH_TOKEN: " + process.env.TWILIO_AUTH_TOKEN)
-logger.info("AUTHY_API_KEY: " + process.env.AUTHY_API_KEY)
-logger.info("-------------------------------------------");
+
+//Set Logger Information
+logger.add(logger.transports.File, { filename: config.log_filename });
+logger.level = config.log_level;
+
+logger.debug("TWILIO_ACCOUNT_SID: " + process.env.TWILIO_ACCOUNT_SID)
+logger.debug("TWILIO_AUTH_TOKEN: " + process.env.TWILIO_AUTH_TOKEN)
+logger.debug("AUTHY_API_KEY: " + process.env.AUTHY_API_KEY)
+logger.debug("-------------------------------------------");
 
 const twilio = require('twilio')(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN);
 const enums = require('authy-client').enums;
@@ -81,7 +83,7 @@ function tryPhoneVerification(){
 				phone_sid = number.sid;
 				logger.info("Country Code: " + country_code);
 				logger.info("Phone Number: " + phone_number);
-				logger.info("Phone SID: " + phone_sid);
+				logger.debug("Phone SID: " + phone_sid);
 				logger.info("Twilio Phone Number has been set to send callback to: " + number.sms_url);
 				if(config.onecode == true){
 					reuse_number = true;	
@@ -114,7 +116,7 @@ function tryOneCode(){
 					phone_sid = number.sid;
 					logger.info("Country Code: " + country_code);
 					logger.info("Phone Number: " + phone_number);
-					logger.info("Phone SID: " + phone_sid);
+					logger.debug("Phone SID: " + phone_sid);
 					//Call Authy User Registration
 					registerUser(country_code, phone_number);
 				}else{
