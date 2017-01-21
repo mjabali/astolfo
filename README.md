@@ -70,7 +70,7 @@ This project is built using the [Express](http://expressjs.com/) web framework.
 * `remove_number` _(boolean)_: Set it to true if you want to remove the Twilio Number after the tests.
 * `log_level` _(error (0), warn (1), info (2), verbose (3), debug (4), silly (5))_: Log level you want to use for the testing framework.
 * `log_filename` _(string)_: The name of the file you want to log testing output messages.
-* `runOnStartup` _(boolean)_: Set it to true if you want to run the tests automatically.
+* `runOnStartup` _(boolean)_: Set it to true if you want to run the tests automatically. Otherwise, you will have to send an HTTP request to start the tests.
 
 Save the file.
 
