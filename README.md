@@ -70,6 +70,7 @@ This project is built using the [Express](http://expressjs.com/) web framework.
 * `remove_number` _(boolean)_: Set it to true if you want to remove the Twilio Number after the tests.
 * `log_level` _(error (0), warn (1), info (2), verbose (3), debug (4), silly (5))_: Log level you want to use for the testing framework.
 * `log_filename` _(string)_: The name of the file you want to log testing output messages.
+* `runOnStartup` _(boolean)_: Set it to true if you want to run the tests automatically.
 
 Save the file.
 
@@ -80,8 +81,8 @@ Save the file.
    $ npm start
    ```
 
-## Start the Testing Framework
-1. Simply make an HTTP POST call to http://hostname:port/start to start the testing framework.
+## Running the Testing Framework Manually
+1. Simply make an HTTP POST call to http://hostname:port/start to run the testing framework.
 
 That's it! The tests should be performed automatically for you.
 

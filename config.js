@@ -9,5 +9,6 @@ module.exports = {
     area_code: 619,
     remove_number: true,
     log_level: "debug",
-    log_filename: "./authy-tests.log"
+    log_filename: "./authy-tests.log",
+    runOnStartup: true
 };

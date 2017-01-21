@@ -231,7 +231,10 @@ function phoneVerificationVerify(token){
 }
 
 //Start Testing Framework Automatically
-//tryPhoneVerification();
+if(config.runOnStartup == true){
+	tryPhoneVerification();	
+}
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
