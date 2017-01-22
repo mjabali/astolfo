@@ -40,6 +40,10 @@ var country_code = null;
 var authy_id = null;
 var phone_sid = null;
 var reuse_number = false;
+var reporting = [
+	{'product':'Phone Verification','status':false,'description':'Phone Verification Tests Not Executed'},
+	{'product':'OneCode','status':false,'description':'OneCode Tests Not Executed'}
+];
 
 //Receive OneCode SMS Content to be validated
 app.post('/onecode', function (req, res) {
@@ -66,7 +70,7 @@ app.post('/start', function (req, res) {
   	res.send('Success!');
 })
 
-/* API Setup */
+/* API Home Page */
 app.get('/', function (req, res) {
 	res.render('index',{ title : 'Authy OneCode and Phone Verification Automated Testing Framework' })
 });
@@ -161,7 +165,6 @@ function tryOneCode(){
 		phone: phone_number
 	}, function (err, registration) {
 		if (err) throw err;
-
 		authy_id = registration.user.id;
 		logger.info("Authy User Registered: " + authy_id);
 		//Call Authy OneCode API
@@ -191,6 +194,9 @@ function oneCodeVerify(token){
 	authy.verifyToken({ authyId: authy_id, token: token }, function(err, res) {
 		if (err) throw err;
 		logger.info('Token is valid');
+		reporting[1].status = true;
+		reporting[1].description = 'OneCode Tests Executed Successfully';
+		console.log(JSON.stringify(reporting));
 	});
 	removeUser(authy_id);
 	if(config.remove_number == true){
@@ -208,11 +214,11 @@ function phoneVerificationRequest(country_code, phone_number){
 	}
 	request(options, function(error, response, body){
 		if(!error && response.statusCode == 200){
-			logger.info("Phone Information: " + body);
+			logger.debug("Phone Information: " + body);
 		}else{
 			logger.error("ERROR: " + error);
 		}
-	})
+	})	
 }
 
 //Validate Phone Verification Request
@@ -223,6 +229,11 @@ function phoneVerificationVerify(token){
 		token: token }, function(err, res) {
 			if (err) throw err;
 			logger.info('Verification code is valid');
+			reporting[0].status = true;
+			reporting[0].description = 'Phone Verification Tests Executed Successfully';
+			if(config.onecode == false){
+				console.log(JSON.stringify(reporting));	
+			}
 		});
 	if(config.remove_number == true){
 		removeTwilioNumber();	
