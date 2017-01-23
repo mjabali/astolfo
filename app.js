@@ -190,11 +190,15 @@ function oneCodeRequest(authyID){
 function oneCodeVerify(token){
 	logger.info("Validating token: " + token + " for Authy ID: " + authy_id);
 	authy.verifyToken({ authyId: authy_id, token: token }, function(err, res) {
-		if (err) throw err;
-		logger.info('Token is valid');
-		reporting[1].status = true;
-		reporting[1].description = 'OneCode Tests Executed Successfully';
-		console.log(JSON.stringify(reporting));
+		if (err){
+			logger.info("Token: " + res.token);
+			console.log(JSON.stringify(reporting));
+		}else{
+			logger.info("Token: " + res.token);
+			reporting[1].status = true;
+			reporting[1].description = 'OneCode Tests Executed Successfully';
+			console.log(JSON.stringify(reporting));
+		}
 	});
 	removeUser(authy_id);
 	if(config.remove_number == true){
@@ -225,12 +229,16 @@ function phoneVerificationVerify(token){
 		countryCode: 'US', 
 		phone: phone_number, 
 		token: token }, function(err, res) {
-			if (err) throw err;
-			logger.info('Verification code is valid');
-			reporting[0].status = true;
-			reporting[0].description = 'Phone Verification Tests Executed Successfully';
-			if(config.onecode == false){
-				console.log(JSON.stringify(reporting));	
+			if (err){
+				logger.info(res.success);
+				console.log(JSON.stringify(reporting));
+			}else{
+				logger.info(res.message);
+				reporting[0].status = true;
+				reporting[0].description = 'Phone Verification Tests Executed Successfully';
+				if(config.onecode == false){
+					console.log(JSON.stringify(reporting));	
+				}
 			}
 		});
 	if(config.remove_number == true){
