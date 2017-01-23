@@ -121,7 +121,7 @@ function tryOneCode(){
 					country_code = number.phone_number.substring(0,2);
 					phone_number = number.phone_number.substring(2,12);
 					phone_sid = number.sid;
-					logger.info("Country Code: " + country_code + "and Phone Number: " + phone_number);
+					logger.info("Country Code: " + country_code + " and Phone Number: " + phone_number);
 					logger.debug("Phone SID: " + phone_sid);
 					//Call Authy User Registration
 					registerUser(country_code, phone_number);
