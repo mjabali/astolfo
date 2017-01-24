@@ -39,8 +39,8 @@ This project is built using the [Express](http://expressjs.com/) web framework.
 1. First clone this repository and then `cd` into it.
 
    ```bash
-   $ git clone https://github.com/mjabali/astolfo.git
-   $ cd astolfo
+   $ git clone https://github.com/AuthySE/authy-testing-sample.git
+   $ cd authy-testing-sample
    ```
 
 1. Install the dependencies.
@@ -91,3 +91,5 @@ That's it! The tests should be performed automatically for you.
 ## Meta
 
 * No warranty expressed or implied. Software is as is.
+* [Apache License](https://opensource.org/licenses/Apache-2.0)
+* Lovingly crafted by Authy Solutions Architecture Team.
