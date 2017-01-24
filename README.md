@@ -12,10 +12,10 @@ The following tasks are performed during the execution of the tests:
 * The Twilio Phone Number is registered against the Authy application
 * The Twilio Phone Number Webhook URL is updated to reflect the new testing against the Authy OneCode API
 * The Authy OneCode API is called and a SMS message delivered to the Twilio Number
-* The Twilio Number forwads the message to the configured Webhook URL
+* The Twilio Number forwards the message to the configured Webhook URL
 * The framework receives that information and calls the Authy TOTP API to verify the code
 * The framework reports if the code is valid or not
-* The Twilio Number is released
+* The Twilio Number is released or not depending on the your configuration. Please see the list of Arguments below. 
 
 ## Quickstart
 
