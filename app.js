@@ -28,6 +28,7 @@ logger.level = config.log_level;
 logger.debug("TWILIO_ACCOUNT_SID: " + process.env.TWILIO_ACCOUNT_SID)
 logger.debug("TWILIO_AUTH_TOKEN: " + process.env.TWILIO_AUTH_TOKEN)
 logger.debug("AUTHY_API_KEY: " + process.env.AUTHY_API_KEY)
+logger.debug("TWILIO_PHONE_SID:" + process.env.TWILIO_PHONE_SID)
 logger.debug("-------------------------------------------");
 
 const twilio = require('twilio')(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN);
@@ -79,6 +80,30 @@ app.get('/', function (req, res) {
 function tryPhoneVerification(){
 	if(config.phone_verification == true){
 		logger.info("Running Phone Verification Testing");
+		if (config.useExistingNumber == true){
+			logger.info("Updating Existing Number to Phone Verification Webhook");
+			twilio.incomingPhoneNumbers(process.env.TWILIO_PHONE_SID).update({
+				SmsUrl: config.pv_sms_url,
+				SmsMethod: 'POST',
+				FriendlyName: 'PhoneVerificationTestingNumber'
+			}, function(err, number){
+				if(err == null){
+					country_code = number.phone_number.substring(0,2);
+					phone_number = number.phone_number.substring(2,12);
+					phone_sid = number.sid;
+					logger.info("Country Code: " + country_code + " and Phone Number: " + phone_number);
+					logger.debug("Phone SID: " + phone_sid);
+					logger.info("Updated existing number to send callback to: " + number.sms_url);
+					if(config.onecode == true){
+						reuse_number = true;	
+					}
+					//Call Authy Phone Verification 
+					phoneVerificationRequest(country_code, phone_number);
+				}else{
+					logger.error("ERROR: " + err.message);
+				}				
+			});
+		}else{
 			twilio.incomingPhoneNumbers.create({
 			SmsUrl: config.pv_sms_url,
 			AreaCode: config.area_code,
@@ -101,6 +126,7 @@ function tryPhoneVerification(){
 				logger.error("ERROR: " + err.message);
 			}	
 		});
+		}	
 	}else{
 		tryOneCode();
 	}
@@ -109,7 +135,7 @@ function tryPhoneVerification(){
 function tryOneCode(){
 	if(config.onecode == true){
 		logger.info("Running Authy OneCode Testing");
-		if(reuse_number == false){
+		if(reuse_number == false && config.useExistingNumber == false){
 			logger.info("Getting a New Twilio Number");
 			twilio.incomingPhoneNumbers.create({
 			SmsUrl: config.oc_sms_url,
@@ -130,23 +156,32 @@ function tryOneCode(){
 				}
 			});
 		}else{
+			logger.info("Reusing Existing Twilio Number");	
 			logger.info("Updating Existing Number to OneCode Webhook");
-			twilio.incomingPhoneNumbers(phone_sid).update({
-				SmsUrl: config.oc_sms_url
+			twilio.incomingPhoneNumbers(process.env.TWILIO_PHONE_SID).update({
+				SmsUrl: config.oc_sms_url,
+				FriendlyName: 'OneCodeTestingNumber'
 			}, function(err, number){
-				if(err) throw err;
-				logger.info("Updated existing number to send callback to: " + number.sms_url);
+				if(err == null){
+					country_code = number.phone_number.substring(0,2);
+					phone_number = number.phone_number.substring(2,12);
+					phone_sid = number.sid;
+					logger.info("Country Code: " + country_code + " and Phone Number: " + phone_number);
+					logger.debug("Phone SID: " + phone_sid);
+					logger.info("Updated existing number to send callback to: " + number.sms_url);
+					//Call Authy User Registration
+					registerUser(country_code, phone_number);
+				} else{
+					logger.error("ERROR: " + err.message);
+				}
 			});
-			//Call Authy User Registration
-			logger.info("Reusing Existing Twilio Number");
-			registerUser(country_code, phone_number);
 		}
 	}
 }
  
  //Remove Twilio Number
  function removeTwilioNumber(){
- 	if(reuse_number == false){
+ 	if(reuse_number == false && config.useExistingNumber == false){
 	 	twilio.incomingPhoneNumbers(phone_sid).delete(function(err){
 	 		if (err) throw err;
 	 		logger.info("Twilio Phone Number Released");
