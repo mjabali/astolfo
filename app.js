@@ -256,7 +256,7 @@ function phoneVerificationRequest(country_code, phone_number){
 		if(!error && response.statusCode == 200){
 			logger.debug("Phone Information: " + body);
 			if (config.polling == true){
-				spollTwilioNumber(true);
+				pollTwilioNumber(true);
   			}
 		}else{
 			logger.error("ERROR: " + error);
