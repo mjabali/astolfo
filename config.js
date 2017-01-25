@@ -4,13 +4,14 @@ module.exports = {
     TWILIO_PHONE_SID: process.env.TWILIO_PHONE_SID,
     AUTHY_API_KEY: process.env.AUTHY_API_KEY,
     phone_verification: false,
-    pv_sms_url: 'http://1d225ad6.ngrok.io/verification',
+    pv_sms_url: 'http://e5c6038e.ngrok.io/verification',
     onecode: true,
-    oc_sms_url: 'http://1d225ad6.ngrok.io/onecode',
+    oc_sms_url: 'http://e5c6038e.ngrok.io/onecode',
+    polling: true,
     useExistingNumber: true,
     area_code: 619,
     remove_number: false,
-    log_level: "info",
+    log_level: "debug",
     log_filename: "./authy-tests.log",
     runOnStartup: true
 };

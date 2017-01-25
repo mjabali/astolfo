@@ -218,6 +218,9 @@ function oneCodeRequest(authyID){
 	authy.requestSms({ authyId: authyID }, function(err, res) {
   		if (err) throw err;
   		logger.info('Message sent successfully to', phone_number);
+  		if (config.polling == true){
+				setTimeout(pollTwilioNumber(false), 3000);
+  		}
 	});
 }
 
@@ -252,6 +255,9 @@ function phoneVerificationRequest(country_code, phone_number){
 	request(options, function(error, response, body){
 		if(!error && response.statusCode == 200){
 			logger.debug("Phone Information: " + body);
+			if (config.polling == true){
+				setTimeout(pollTwilioNumber(true), 3000);
+  			}
 		}else{
 			logger.error("ERROR: " + error);
 		}
@@ -280,6 +286,29 @@ function phoneVerificationVerify(token){
 		removeTwilioNumber();	
 	}
 	tryOneCode();
+}
+
+//Poll Twilio Number for New SMS Messages
+function pollTwilioNumber(verify){
+	logger.info("Polling Twilio Number for new SMS messages");
+	setTimeout(function () {
+		twilio.messages.list(function(err, data) {
+			if(err){
+				logger.error(err.message)
+			}else{
+				_msg = data.messages[0].body;
+				console.log("Got message: " + _msg);
+				var token = _msg.match(/\d/g);
+				token = token.join("");
+				if(verify == true){
+					phoneVerificationVerify(token);
+				}else{
+					oneCodeVerify(token);
+				}
+			}			
+		});
+	}, 3000);
+	
 }
 
 //Start Testing Framework Automatically
