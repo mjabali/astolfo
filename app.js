@@ -219,7 +219,7 @@ function oneCodeRequest(authyID){
   		if (err) throw err;
   		logger.info('Message sent successfully to', phone_number);
   		if (config.polling == true){
-				setTimeout(pollTwilioNumber(false), 3000);
+				pollTwilioNumber(false);
   		}
 	});
 }
@@ -256,7 +256,7 @@ function phoneVerificationRequest(country_code, phone_number){
 		if(!error && response.statusCode == 200){
 			logger.debug("Phone Information: " + body);
 			if (config.polling == true){
-				setTimeout(pollTwilioNumber(true), 3000);
+				pollTwilioNumber(true);
   			}
 		}else{
 			logger.error("ERROR: " + error);
