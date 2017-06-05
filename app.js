@@ -206,12 +206,22 @@ function tryOneCode(){
  }
  
  //Remove Authy User
- function removeUser(){
- 	authy.deleteUser({ authyId: authy_id }, function(err, res) {
- 		if (err) throw err;
- 		logger.info('User has been scheduled for deletion');
- 	});
- }
+function removeUser(authyID){
+	logger.info("Removing User " + authyID + " from Authy application");
+	var options = {
+		url: 'https://api.authy.com/protected/json/users/' + authyID + '/delete',
+		method: 'POST',
+		form: {'api_key':config.AUTHY_API_KEY}
+	}
+	request(options, function(error, response, body){
+		if(!error && response.statusCode == 200){
+			logger.debug(body);
+			logger.info('User has been removed from application');	
+		}else{
+			logger.error("ERROR: " + error);
+		}
+	})	
+}
 
 //Trigger OneCode Request
 function oneCodeRequest(authyID){
@@ -229,7 +239,6 @@ function oneCodeVerify(token){
 	logger.info("Validating token: " + token + " for Authy ID: " + authy_id);
 	authy.verifyToken({ authyId: authy_id, token: token }, function(err, res) {
 		if (err){
-			logger.info("Token: " + res.token);
 			console.log(JSON.stringify(reporting));
 		}else{
 			logger.info("Token: " + res.token);
@@ -271,7 +280,6 @@ function phoneVerificationVerify(token){
 		phone: phone_number, 
 		token: token }, function(err, res) {
 			if (err){
-				logger.info(res.success);
 				console.log(JSON.stringify(reporting));
 			}else{
 				logger.info(res.message);
