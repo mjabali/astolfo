@@ -206,12 +206,22 @@ function tryOneCode(){
  }
  
  //Remove Authy User
- function removeUser(){
- 	authy.deleteUser({ authyId: authy_id }, function(err, res) {
- 		if (err) throw err;
- 		logger.info('User has been scheduled for deletion');
- 	});
- }
+function removeUser(authyID){
+	logger.info("Removing User " + authyID + " from Authy application");
+	var options = {
+		url: 'https://api.authy.com/protected/json/users/' + authyID + '/delete',
+		method: 'POST',
+		form: {'api_key':config.AUTHY_API_KEY}
+	}
+	request(options, function(error, response, body){
+		if(!error && response.statusCode == 200){
+			logger.debug(body);
+			logger.info('User has been removed from application');	
+		}else{
+			logger.error("ERROR: " + error);
+		}
+	})	
+}
 
 //Trigger OneCode Request
 function oneCodeRequest(authyID){
